@@ -47,23 +47,23 @@ if ( ! class_exists( 'WP_Tarhelylista_Teszt_Benchmark', false ) ) :
 
       $timeStart = microtime(true);
 
-      test_math($result);
-      test_string($result);
-      test_loops($result);
-      test_ifelse($result);
+      $this->test_math($result);
+      $this->test_string($result);
+      $this->test_loops($result);
+      $this->test_ifelse($result);
 
-      $result['benchmark']['calculation_total'] = timer_diff($timeStart) . ' sec.';
+      $result['benchmark']['calculation_total'] = $this->timer_diff($timeStart) . ' sec.';
 
       if (isset($settings['db.host'])) {
-        test_mysql($result, $settings);
+        $this->test_mysql($result, $settings);
       }
 
-      $result['benchmark']['total'] = timer_diff($timeStart) . ' sec.';
+      $result['benchmark']['total'] = $this->timer_diff($timeStart) . ' sec.';
 
       return $result;
     }
 
-    public function test_math(&$result, $count = 99999) {
+    public function test_math(&$result, $count = 500000) {
       $timeStart = microtime(true);
 
       $mathFunctions = array("abs", "acos", "asin", "atan", "bindec", "floor", "exp", "sin", "tan", "pi", "is_finite", "is_nan", "sqrt");
@@ -72,10 +72,10 @@ if ( ! class_exists( 'WP_Tarhelylista_Teszt_Benchmark', false ) ) :
           call_user_func_array($function, array($i));
         }
       }
-      $result['benchmark']['math'] = timer_diff($timeStart) . ' sec.';
+      $result['benchmark']['math'] = $this->timer_diff($timeStart) . ' sec.';
     }
 
-    public function test_string(&$result, $count = 99999) {
+    public function test_string(&$result, $count = 500000) {
       $timeStart = microtime(true);
       $stringFunctions = array("addslashes", "chunk_split", "metaphone", "strip_tags", "md5", "sha1", "strtoupper", "strtolower", "strrev", "strlen", "soundex", "ord");
 
@@ -85,10 +85,10 @@ if ( ! class_exists( 'WP_Tarhelylista_Teszt_Benchmark', false ) ) :
           call_user_func_array($function, array($string));
         }
       }
-      $result['benchmark']['string'] = timer_diff($timeStart) . ' sec.';
+      $result['benchmark']['string'] = $this->timer_diff($timeStart) . ' sec.';
     }
 
-    public function test_loops(&$result, $count = 999999) {
+    public function test_loops(&$result, $count = 9999999) {
       $timeStart = microtime(true);
       for ($i = 0; $i < $count; ++$i) {
 
@@ -99,10 +99,10 @@ if ( ! class_exists( 'WP_Tarhelylista_Teszt_Benchmark', false ) ) :
         ++$i;
       }
 
-      $result['benchmark']['loops'] = timer_diff($timeStart) . ' sec.';
+      $result['benchmark']['loops'] = $this->timer_diff($timeStart) . ' sec.';
     }
 
-    public function test_ifelse(&$result, $count = 999999) {
+    public function test_ifelse(&$result, $count = 9999999) {
       $timeStart = microtime(true);
       for ($i = 0; $i < $count; $i++) {
         if ($i == -1) {
@@ -115,30 +115,30 @@ if ( ! class_exists( 'WP_Tarhelylista_Teszt_Benchmark', false ) ) :
           }
         }
       }
-      $result['benchmark']['ifelse'] = timer_diff($timeStart) . ' sec.';
+      $result['benchmark']['ifelse'] = $this->timer_diff($timeStart) . ' sec.';
     }
 
     public function test_mysql(&$result, $settings) {
       $timeStart = microtime(true);
 
       $link = mysqli_connect($settings['db.host'], $settings['db.user'], $settings['db.pw']);
-      $result['benchmark']['mysql_connect'] = timer_diff($timeStart) . ' sec.';
+      $result['benchmark']['mysql_connect'] = $this->timer_diff($timeStart) . ' sec.';
 
       mysqli_select_db($link, $settings['db.name']);
-      $result['benchmark']['mysql_select_db'] = timer_diff($timeStart) . ' sec.';
+      $result['benchmark']['mysql_select_db'] = $this->timer_diff($timeStart) . ' sec.';
 
       $dbResult = mysqli_query($link, 'SELECT VERSION() as version;');
       $arr_row = mysqli_fetch_array($dbResult);
       $result['sysinfo']['mysql_version'] = $arr_row['version'];
-      $result['benchmark']['mysql_query_version'] = timer_diff($timeStart) . ' sec.';
+      $result['benchmark']['mysql_query_version'] = $this->timer_diff($timeStart) . ' sec.';
 
-      $query = "SELECT BENCHMARK(1000000, AES_ENCRYPT('hello', UNHEX('F3229A0B371ED2D9441B830D21A390C3')));";
+      $query = "SELECT BENCHMARK(10000000, AES_ENCRYPT('hello', UNHEX('F3229A0B371ED2D9441B830D21A390C3')));";
       mysqli_query($link, $query);
-      $result['benchmark']['mysql_query_benchmark'] = timer_diff($timeStart) . ' sec.';
+      $result['benchmark']['mysql_query_benchmark'] = $this->timer_diff($timeStart) . ' sec.';
 
       mysqli_close($link);
 
-      $result['benchmark']['mysql_total'] = timer_diff($timeStart) . ' sec.';
+      $result['benchmark']['mysql_total'] = $this->timer_diff($timeStart) . ' sec.';
 
       return $result;
     }
@@ -149,7 +149,7 @@ if ( ! class_exists( 'WP_Tarhelylista_Teszt_Benchmark', false ) ) :
       $time_start = microtime(true);
 
       //Create some random posts, update, read and delete them
-      $count = 250;
+      $count = 500;
       for($x=0; $x<$count;$x++){
 
         //Create random content
@@ -176,7 +176,7 @@ if ( ! class_exists( 'WP_Tarhelylista_Teszt_Benchmark', false ) ) :
       global $wpdb;
       $table = $wpdb->prefix . 'options';
       $optionname = 'wp_tarhelylista_teszt_';
-      $count = 250;
+      $count = 500;
       for($x=0; $x<$count;$x++){
         //insert
         $data = array('option_name' => $optionname . $x, 'option_value' => wp_generate_password(100));
@@ -197,7 +197,7 @@ if ( ! class_exists( 'WP_Tarhelylista_Teszt_Benchmark', false ) ) :
       }
 
       //Sum up the results
-      $time = timer_diff($time_start);
+      $time = $this->timer_diff($time_start);
       $queries = ($count * 2 * 8) / $time;
       return array('time'=>$time, 'operations'=>$queries);
     }

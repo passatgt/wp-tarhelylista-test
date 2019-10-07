@@ -122,7 +122,7 @@ class WP_Tarhelylista_Teszt {
         <tfoot>
           <tr>
             <td><?php echo $this->_wp_benchmark_results['time']; ?></td>
-            <td><?php echo $this->_wp_benchmark_results['queries']; ?></td>
+            <td><?php echo $this->_wp_benchmark_results['operations']; ?></td>
           </tr>
         </tfoot>
       </table>
